@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Components;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.JSInterop;
 using OrderSite.Models;
 using System.Collections.Generic;
 
@@ -27,5 +29,8 @@ public class OrderContext : DbContext
     {
         base.OnConfiguring(optionsBuilder);
         optionsBuilder.UseSqlite($"Data Source={DbPath}");
+        optionsBuilder.LogTo(Console.WriteLine, LogLevel.Warning)
+            .EnableDetailedErrors()
+            .EnableSensitiveDataLogging(true);
     }
 }

@@ -1,39 +1,43 @@
 ﻿@page "/"
-@using Microsoft.Data.Sqlite
-@using Microsoft.EntityFrameworkCore
+@using OrderSite.Models
 
 <PageTitle>Home</PageTitle>
 
 <h1>Hello, world!</h1>
+<p>
+    <input type="text" @oninput="UpdateSO"/>
+    <input type="text" @oninput="UpdatePO"/>
+    <InputCheckbox @bind-Value="isPulled"/>
+</p>
+<InputRadioGroup TValue="@ShippingMethod" Name="Methods" ValueChanged="@method">
+    @foreach(var shipMethod in Enum.GetValues(typeof(ShippingMethod)).Cast<ShippingMethod>())
+        {
+            <InputRadio TValue="@ShippingMethod" Value="@shipMethod">@(shipMethod.ToString())</InputRadio>
+        }
+</InputRadioGroup>
+<p>
+    <label>@salesOrderIn</label>
+    <label>@PONumberIn</label>
+    <label>@isPulled</label>
+    <label>@method</label>
+</p>
 
-Welcome to your new app.
-
-<button @onclick="RunEFCore">Run EF Core</button>
+<table>
+@foreach (Order order in orders.Orders!) {
+    <tr>@order.OrderNumber, @order.PONumber</tr>
+}
+</table>
 
 @code {
-    private async Task RunEFCore()
-    {
-        var connectionStringBuilder = new SqliteConnectionStringBuilder { DataSource = ""}; // Temporary
-        var connection = new SqliteConnection(connectionStringBuilder.ToString());
-
-        var options = new DbContextOptionsBuilder<OrderContext>()
-            .UseSqlite(connection)
-            .Options;
-
-        using var db = new OrderContext();
-        db.Database.OpenConnection();
-        await db.Database.EnsureCreatedAsync();
-        var nextId = db.Orders.Count() + 1;
-        db.Orders.Add(new Models.Order(true, 11111111, "Test", Models.ShippingMethod.CPUP, DateTime.Now));
-        await db.SaveChangesAsync();
-
-        await foreach (var orderNumber in db.Orders.AsAsyncEnumerable())
-        {
-
-        }
-        db.Database.CloseConnection();
-
+    private string salesOrderIn = "";
+    private string PONumberIn = "";
+    private bool isPulled = false;
+    private ShippingMethod method;
+    OrderCurrier orders = new OrderCurrier();
+    private void UpdateSO(ChangeEventArgs e) {
+        salesOrderIn = e.Value!.ToString()!;
     }
-}    using Microsoft.Data.Sqlite;
-    using Microsoft.EntityFrameworkCore;
-    using Microsoft.EntityFrameworkCore;
+    private void UpdatePO(ChangeEventArgs e) {
+        PONumberIn = e.Value!.ToString()!;
+    }
+}

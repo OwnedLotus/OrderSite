@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Text.Json;
 
 namespace OrderSite.Models;
@@ -14,8 +15,9 @@ public enum ShippingMethod
 
 public class Order(bool isPulled, uint orderNumber, string poNumber, ShippingMethod method, DateTime orderEntered): IComparable<Order>
 {
-    public bool IsPulled { get; set; } = isPulled;
+    [Key]
     public uint OrderNumber { get; set; } = orderNumber;
+    public bool IsPulled { get; set; } = isPulled;
     public string PONumber { get; set; } = poNumber;
     public ShippingMethod Method { get; set; } = method;
     public DateTime OrderEntered { get; set; } = orderEntered;
